@@ -1,4 +1,5 @@
 from django.db import models
+from ckeditor.fields import RichTextField
 
 GENDER_LIST=(
     (1,'男'),
@@ -35,11 +36,17 @@ class Type(models.Model):
 class Article(models.Model):
     title = models.CharField(max_length=32,verbose_name='文章标题')
     date = models.DateField(auto_now=True,verbose_name='发表时间')
-    content = models.TextField(verbose_name='内容')
-    description = models.TextField(verbose_name='描述')
+    # content = models.TextField(verbose_name='内容')
+    content = RichTextField()
+    # description = models.TextField(verbose_name='描述')
+    description = RichTextField()
     # 图片
     # upload_to 指定文件上传位置，static目录下的images中
     picture = models.ImageField(upload_to='images')
+    # 推荐1 非推荐0
+    recommend = models.IntegerField(verbose_name='推荐',default=0)
+    # 点击率
+    click = models.IntegerField(verbose_name='点击率',default=0)
     author = models.ForeignKey(to=Author,on_delete=models.SET_DEFAULT,default=1,verbose_name='作者')
     type = models.ManyToManyField(to=Type,verbose_name='类型')
 

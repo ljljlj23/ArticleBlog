@@ -9,7 +9,11 @@ def about(request):
     return render(request,'about.html')
 
 def index(request):
-    return render(request,'index.html')
+    article = Article.objects.order_by('-date')[:6]
+    recommend_article = Article.objects.filter(recommend=1)[:7]
+    click_article = Article.objects.filter(recommend=1)[:12]
+
+    return render(request,'index.html',locals())
 
 def listpic(request):
     return render(request,'listpic.html')
