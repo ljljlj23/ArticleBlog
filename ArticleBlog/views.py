@@ -69,7 +69,7 @@ def pagetest(request):
     page = paginator.page(5)
     print(page)    # <Page 5 of 21>，表示当前对象
     for one in page:
-        print(one.content)
+        print(one.title)
 
     print(page.number)    # 5，当前页
     print(page.has_next())    # 是否有下一页
@@ -77,5 +77,9 @@ def pagetest(request):
     print(page.has_other_pages())    # 是否有其他页
     print(page.next_page_number())    # 下一页的页码，如果没有，抛异常
     print(page.previous_page_number())    # 上一页的页码，如果没有，抛异常
+
+    author = Author.objects.all().first()
+    print(author.gender)    # 1
+    print(author.get_gender_display())    # 男
 
     return HttpResponse('分页功能测试')

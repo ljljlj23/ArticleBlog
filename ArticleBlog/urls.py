@@ -27,7 +27,7 @@ urlpatterns = [
     re_path('newslistpic/(?P<page>\d+)',views.newslistpic),
     path('base/',views.base),
     re_path('articledetails/(?P<id>\d+)',views.articledetails),
-    path('addarticle',views.addarticle),
-    path('pagetest',views.pagetest),
-    path('ckeditor',include('ckeditor_uploader.urls'))
+    path('addarticle/',views.addarticle),
+    path('pagetest/',views.pagetest),
+    path('ckeditor/',include('ckeditor_uploader.urls'))
 ]
