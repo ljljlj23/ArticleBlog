@@ -9,68 +9,32 @@
     <div class="about_box">
       <h2 class="nh1"><span>您现在的位置是：<a href="/" target="_blank">网站首页</a>>><a href="#" target="_blank">个人日记</a></span><b>个人日记</b></h2>
       <div class="dtxw box">
-        <li>
+        {% for one in page_obj %}
+          <li>
           <div class="dttext f_l">
             <ul>
-              <h2><a href="/">个人博客模板古典系列之――江南墨卷</a></h2>
-              <p>个人博客模板古典系列之――江南墨卷个人博客模板古典系列之――江南墨卷个人博客模板古典系列之――江南墨卷原汁原味重现经典....</p>
-              <span>2017-3-10</span>
+              <h2><a href="/articledetails/{{ one.id }}">{{ one.title }}</a></h2>
+              <p>{{ one.description }}</p>
+              <span>{{ one.date }}</span>
             </ul>
           </div>
-          <div class="xwpic f_r"><a href="/"><img src="/static/images/02.jpg"></a></div>
+          <div class="xwpic f_r"><a href="/"><img src="/static/{{ one.picture }}"></a></div>
         </li>
-        <li>
-          <div class="dttext f_l">
-            <ul>
-              <h2><a href="/">个人博客模板古典系列之――江南墨卷</a></h2>
-              <p>个人博客模板古典系列之――江南墨卷个人博客模板古典系列之――江南墨卷广安领先....</p>
-              <span>2017-3-10</span>
-            </ul>
-          </div>
-          <div class="xwpic f_r"><a href="/"><img src="/static/images/01.jpg"></a></div>
-        </li>
-        <li>
-          <div class="dttext f_l">
-            <ul>
-              <h2><a href="/">个人博客模板古典系列之――江南墨卷</a></h2>
-              <p>个人博客模板古典系列之――江南墨卷个人博客模板古典系列之――江南墨卷个人博客模板古典系列之――江南墨卷原汁原味重现经典....</p>
-              <span>2017-3-10</span>
-            </ul>
-          </div>
-          <div class="xwpic f_r"><a href="/"><img src="/static/images/03.jpg"></a></div>
-        </li>
-        <li>
-          <div class="dttext f_l">
-            <ul>
-              <h2><a href="/">个人博客模板古典系列之――江南墨卷</a></h2>
-              <p>个人博客模板古典系列之――江南墨卷个人博客模板古典系列之――江南墨卷个人博客模板古典系列之――江南墨卷原汁原味重现经典</p>
-              <span>2017-3-10</span>
-            </ul>
-          </div>
-          <div class="xwpic f_r"><a href="/"><img src="/static/images/04.jpg"></a></div>
-        </li>
-        <li>
-          <div class="dttext f_l">
-            <ul>
-              <h2><a href="/">个人博客模板古典系列之――江南墨卷</a></h2>
-              <p>个人博客模板古典系列之――江南墨卷个人博客模板古典系列之――江南墨卷个人博客模板古典系列之――江南墨卷原汁原味重现经典</p>
-              <span>2017-3-10</span>
-            </ul>
-          </div>
-          <div class="xwpic f_r"><a href="/"><img src="/static/images/02.jpg"></a></div>
-        </li>
-        <li>
-          <div class="dttext f_l">
-            <ul>
-              <h2><a href="/">个人博客模板古典系列之――江南墨卷</a></h2>
-              <p>个人博客模板古典系列之――江南墨卷个人博客模板古典系列之――江南墨卷个人博客模板古典系列之――江南墨卷原汁原味重现经典</p>
-              <span>2017-3-10</span>
-            </ul>
-          </div>
-          <div class="xwpic f_r"><a href="/"><img src="/static/images/06.jpg"></a></div>
-        </li>
+        {% endfor %}
       </div>
-      <div class="pagelist">页次：1/1 每页25 总数10<a href="/">首页</a><a href="/">上一页</a><a href="/">下一页</a><a href="/">尾页</a></div>
+      <div class="pagelist">
+      <a href="/newslistpic/1">首页</a>
+        {% if page_obj.has_previous %}
+          <a href="/newslistpic/{{ page_obj.previous_page_number }}">上一页</a>
+        {% endif %}
+        {% for page in page_range %}
+          <a href="/newslistpic/{{ page }}">{{ page }}</a>
+        {% endfor %}
+        {% if page_obj.has_next %}
+          <a href="/newslistpic/{{ page_obj.next_page_number }}">下一页</a>
+        {% endif %}
+      <a href="/newslistpic/{{ paginator.num_pages }}">尾页</a>
+      </div>
     </div>
   </div>
   <div class="blank"></div>
