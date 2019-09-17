@@ -11,7 +11,7 @@ def about(request):
 def index(request):
     article = Article.objects.order_by('-date')[:6]
     recommend_article = Article.objects.filter(recommend=1)[:7]
-    click_article = Article.objects.filter(recommend=1)[:12]
+    click_article = Article.objects.order_by('-click')[:12]
 
     return render(request,'index.html',locals())
 
@@ -83,3 +83,98 @@ def pagetest(request):
     print(author.get_gender_display())    # 男
 
     return HttpResponse('分页功能测试')
+
+def reqtest(request):
+    # 获取get请求的请求参数
+    # data = request.GET
+    # print(data)
+    # return HttpResponse('姓名：%s,年龄：%s'%(data.get('name'),data.get('age')))
+
+    # 获取post请求的请求参数
+    data = request.POST
+    print(data)
+    return HttpResponse('姓名：%s,年龄：%s' % (data.get('name'), data.get('age')))
+
+    # request--一个包含请求信息的请求对象
+    # print(request)    # <WSGIRequest: GET '/reqtest/'>
+    # # print(dir(request))
+    # print(request.COOKIES)
+    # print(request.FILES)
+    # print(request.GET)
+    # print(request.POST)
+    # print(request.scheme)
+    # print(request.method)
+    # print(request.path)
+    # print(request.body)
+    # meta = request.META    # 字典
+    # for key in meta:
+    #     print(key)
+    # print('-------------------------------')
+    # print(request.META['OS'])
+    # print(request.META['HTTP_USER_AGENT'])
+    # print(request.META['HTTP_HOST'])
+    # print(request.META.get('HTTP_REFERER'))
+    # return HttpResponse('请求测试')
+
+def formtest(request):
+    # data = request.GET
+    # search = data.get('search')
+    # print(search)
+    # print(type(search))    # <class 'str'>
+    #
+    # # 通过form表单提交的数据，判断数据库中是否存在某个文章，模糊查询
+    # if search:
+    #     article= Article.objects.filter(title__contains=search)
+
+    data = request.POST
+    print(data.get('username'))
+    print(data.get('password'))
+
+    return render(request,'formtest.html',locals())
+
+import hashlib
+def setPassword(password):
+    # 实现密码加密
+    md5 = hashlib.md5()    # 创建一个md5的实例对象
+    md5.update(password.encode())    # 进行加密
+    result = md5.hexdigest()
+    return result
+
+from Article.forms import Register
+# 使用form表单进行后端验证
+def register(request):
+    register_form = Register()
+    if request.method == 'POST':
+        # 获取数据
+        data = Register(request.POST)
+        # 校验是否通过 通过True，否则False
+        if data.is_valid():
+            # 返回一个字典类型，通过校验的数据
+            clean_data=data.cleaned_data
+            print(clean_data)
+            # 获取到数据，写库
+            username=clean_data.get('name')
+            password=clean_data.get('password')
+            user = User()
+            user.name=username
+            user.password=setPassword(password)
+            user.save()
+            result = '注册成功'
+        else:
+            result=data.errors
+            # print(result)
+
+    return render(request,'register.html',locals())
+
+def login(request):
+    if request.method == 'POST':
+        data = User.objects.filter(name=request.POST.get('username')).first()
+        if data:
+            if setPassword(request.POST.get('password'))==data.password:
+                result = '登录成功'
+            else:
+                result = '密码错误'
+        else:
+            result = '不存在此用户'
+
+    return render(request,'login.html',locals())

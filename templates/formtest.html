@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>表单</title>
+</head>
+<body>
+{#<form action="">#}
+{#  <input type="text" name="search">#}
+{#  <input type="submit" value="提交">#}
+{#</form>#}
+{#{% for one in article %}#}
+{#  <p style="font-size: 20px">{{ one.title }}</p>#}
+{#{% endfor %}#}
+<form action="" method="post">
+  {% csrf_token %}
+  用户名：<input type="text" name="username"><br>
+  密 &nbsp;&nbsp; 码：<input type="password" name="password"><br>
+  <input type="submit" value="提交">
+
+</form>
+</body>
+</html>

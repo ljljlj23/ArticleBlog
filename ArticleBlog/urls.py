@@ -29,5 +29,9 @@ urlpatterns = [
     re_path('articledetails/(?P<id>\d+)',views.articledetails),
     path('addarticle/',views.addarticle),
     path('pagetest/',views.pagetest),
-    path('ckeditor/',include('ckeditor_uploader.urls'))
+    path('ckeditor/',include('ckeditor_uploader.urls')),
+    path('reqtest/',views.reqtest),
+    path('formtest/',views.formtest),
+    path('register/',views.register),
+    path('login/',views.login),
 ]
