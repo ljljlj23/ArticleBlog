@@ -5,27 +5,36 @@ from Article.models import *
 def hello(request):
     return HttpResponse('hello')
 
+# 登录拦截装饰器
+def loginVaild(fun):
+    def inner(request,*args,**kwargs):
+        username=request.COOKIES.get('name')
+        username_session=request.session.get('username')
+        print(username_session)
+        if username:
+            return fun(request)
+        else:
+            return HttpResponseRedirect('/login/')
+    return inner
+
+@loginVaild
 def about(request):
     return render(request,'about.html')
 
+@loginVaild
 def index(request):
-    # 获取cookie用户名
-    username=request.COOKIES.get('name')
-    print(request.COOKIES)
-    print(username)
-    if username:
-        article = Article.objects.order_by('-date')[:6]
-        recommend_article = Article.objects.filter(recommend=1)[:7]
-        click_article = Article.objects.order_by('-click')[:12]
-    else:
-        return HttpResponseRedirect('/login/')
+    article = Article.objects.order_by('-date')[:6]
+    recommend_article = Article.objects.filter(recommend=1)[:7]
+    click_article = Article.objects.order_by('-click')[:12]
+
     return render(request,'index.html',locals())
 
 def listpic(request):
     return render(request,'listpic.html')
 
-def newslistpic(request,page=1):
-    article = Article.objects.order_by('-date')
+def newslistpic(request,type='个人日记',page=1):
+    # article = Article.objects.order_by('-date')
+    article=Type.objects.get(name=type).article_set.order_by('-date')
     paginator = Paginator(article,6)    # 每页显示6条数据
     page_obj = paginator.page(int(page))
     # 获取当前页
@@ -189,9 +198,22 @@ def login(request):
             response = HttpResponseRedirect('/index/')
             response.set_cookie('name',username)
             response.set_cookie('password',password)
+            request.session['username']=username
             return response
 
     return render(request,'login.html',locals())
+
+# 登出，删除cookie
+def logout(request):
+    response=HttpResponseRedirect('/login/')
+    response.delete_cookie('name')
+    # 删除指定session，删除的session是保存在服务器上面session的值
+    # 目的是，用户再次使用相同的sessionid进行访问时，拿到的session值是不同的
+    del request.session['username']
+    # 删除所有的session
+    # request.session.flush()
+
+    return response
 
 def ajax_get(request):
     return render(request,'ajax_get.html')
