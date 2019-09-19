@@ -8,11 +8,10 @@ def hello(request):
 # 登录拦截装饰器
 def loginVaild(fun):
     def inner(request,*args,**kwargs):
-        username=request.COOKIES.get('name')
-        username_session=request.session.get('username')
-        print(username_session)
-        if username:
-            return fun(request)
+        username = request.COOKIES.get('name')
+        password = request.COOKIES.get('password')
+        if username and password:
+            return fun(request, *args, **kwargs)
         else:
             return HttpResponseRedirect('/login/')
     return inner
@@ -192,21 +191,29 @@ def login(request):
     if request.method == 'POST':
         username=request.POST.get('username')
         password=setPassword(request.POST.get('password'))
-        user = User.objects.filter(name=username,password=password).first()
-        if user:    # 用户存在，且密码正确
-            # 跳转首页
-            response = HttpResponseRedirect('/index/')
-            response.set_cookie('name',username)
-            response.set_cookie('password',password)
-            request.session['username']=username
-            return response
-
+        if username:
+            user = User.objects.filter(name=username).first()
+            if user:    # 用户存在
+                if user.password==password:    # 密码正确
+                    # 跳转首页
+                    response = HttpResponseRedirect('/index/')
+                    response.set_cookie('name',username)
+                    response.set_cookie('password',password)
+                    request.session['username']=username
+                    return response
+                else:
+                    error_msg = '密码错误'
+            else:
+                error_msg = '该用户不存在，请先注册'
+        else:
+            error_msg = '用户名不可为空'
     return render(request,'login.html',locals())
 
 # 登出，删除cookie
 def logout(request):
     response=HttpResponseRedirect('/login/')
     response.delete_cookie('name')
+    response.delete_cookie('password')
     # 删除指定session，删除的session是保存在服务器上面session的值
     # 目的是，用户再次使用相同的sessionid进行访问时，拿到的session值是不同的
     del request.session['username']

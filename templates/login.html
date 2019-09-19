@@ -9,6 +9,9 @@
   {% csrf_token %}
   用户名：<input type="text" name="username"><br>
   密码：<input type="password" name="password"><br>
+  <p>
+    {{ error_msg }}
+  </p>
   <input type="submit" value="提交">
 </form>
 </body>
