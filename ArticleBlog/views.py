@@ -9,10 +9,16 @@ def about(request):
     return render(request,'about.html')
 
 def index(request):
-    article = Article.objects.order_by('-date')[:6]
-    recommend_article = Article.objects.filter(recommend=1)[:7]
-    click_article = Article.objects.order_by('-click')[:12]
-
+    # 获取cookie用户名
+    username=request.COOKIES.get('name')
+    print(request.COOKIES)
+    print(username)
+    if username:
+        article = Article.objects.order_by('-date')[:6]
+        recommend_article = Article.objects.filter(recommend=1)[:7]
+        click_article = Article.objects.order_by('-click')[:12]
+    else:
+        return HttpResponseRedirect('/login/')
     return render(request,'index.html',locals())
 
 def listpic(request):
@@ -144,6 +150,11 @@ from Article.forms import Register
 # 使用form表单进行后端验证
 def register(request):
     register_form = Register()
+    print(register_form)
+    for one in register_form:
+        print(one.label)
+        print(one)
+    # print(request.body)    # b'csrfmiddlewaretoken=qm8Epoc7Q6fW34bsSUYIOpTcIv4huQI7tEfdgt9KCH3HgRTh6eiK5NUVYj2pfS20&name=123&password=123456'
     if request.method == 'POST':
         # 获取数据
         data = Register(request.POST)
@@ -166,15 +177,80 @@ def register(request):
 
     return render(request,'register.html',locals())
 
+# 登录，重定向
+from django.http import HttpResponseRedirect
 def login(request):
     if request.method == 'POST':
-        data = User.objects.filter(name=request.POST.get('username')).first()
-        if data:
-            if setPassword(request.POST.get('password'))==data.password:
-                result = '登录成功'
-            else:
-                result = '密码错误'
-        else:
-            result = '不存在此用户'
+        username=request.POST.get('username')
+        password=setPassword(request.POST.get('password'))
+        user = User.objects.filter(name=username,password=password).first()
+        if user:    # 用户存在，且密码正确
+            # 跳转首页
+            response = HttpResponseRedirect('/index/')
+            response.set_cookie('name',username)
+            response.set_cookie('password',password)
+            return response
 
     return render(request,'login.html',locals())
+
+def ajax_get(request):
+    return render(request,'ajax_get.html')
+
+from django.http import JsonResponse
+# 查找数据库，判断是否可登录
+def ajax_get_data(request):
+    result = {'code':10000,'content':''}
+    data = request.GET
+    username = data.get('username')
+    password = data.get('password')
+    if username=='' or password=='':
+        result['code'] = 10001
+        result['content'] = '请求参数为空'
+    else:
+        user = User.objects.filter(name=username,password=setPassword(password)).first()
+        if user:
+            result['code'] = 10000
+            result['content'] = '用户可登录'
+        else:
+            result['code'] = 10002
+            result['content'] = '用户名或密码错误'
+
+    # 返回一个json对象
+    return JsonResponse(result)    # 默认情况下，JsonResponse的传入参数是个字典类型
+    # return HttpResponse('这是ajax提交数据')
+
+def ajax_post(request):
+    return render(request,'ajax_post.html')
+
+# 注册
+def ajax_post_data(request):
+    result={'code':10000,'content':''}
+    username=request.POST.get('name')
+    password=request.POST.get('pwd')
+    if username=='' or password=='':
+        result['code'] = 10001
+        result['content'] = '请补全数据'
+    else:
+        user = User()
+        user.name = username
+        user.password = setPassword(password)
+        try:
+            user.save()
+            result['content'] = '注册成功'
+        except:
+            result['code'] = 10002
+            result['content'] = '注册失败'
+
+    return JsonResponse(result)
+
+def checkusername(request):
+    result={'code':10000,'content':''}
+    username=request.GET.get('name')
+    user=User.objects.filter(name=username).exists()
+    if user:    # 存在
+        result['code']=10001
+        result['content']='用户名已存在'
+    else:
+        result['content']='该用户名可用'
+
+    return JsonResponse(result)

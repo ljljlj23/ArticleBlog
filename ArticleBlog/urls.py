@@ -34,4 +34,10 @@ urlpatterns = [
     path('formtest/',views.formtest),
     path('register/',views.register),
     path('login/',views.login),
+    path('ajax_get/',views.ajax_get),
+    path('ajax_get_data/',views.ajax_get_data),
+    path('ajax_post/',views.ajax_post),
+    path('ajax_post_data/',views.ajax_post_data),
+    path('checkusername/',views.checkusername),
+
 ]

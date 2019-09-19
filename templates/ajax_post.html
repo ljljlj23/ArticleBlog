@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AjaxPost</title>
+  <script src="/static/js/jquery-1.8.3.min.js"></script>
+</head>
+<body>
+<form action="" method="post">
+  {% csrf_token %}
+  用户名：<input id="username" type="text" name="username"><div style="color: red" id="text"></div><br>
+  密码：<input id="password" type="password" name="password"><br>
+  <input id="check_value" type="button" value="提交">
+</form>
+<script>
+  $('#username').blur(
+      function () {
+          username = $('#username').val();
+          url='/checkusername/?name='+username;
+          $.ajax(
+              {
+                  url:url ,
+                  type:'get',
+                  data:'',
+                  success:function (data) {
+                      $('#text').text(data.content)
+                  },
+                  error:function (error) {
+                      $('#text').text(error)
+                  }
+              }
+          )
+      }
+  );
+  $('#check_value').click(
+      function () {
+          username=$('#username').val();
+          password=$('#password').val();
+          url='/ajax_post_data/';
+          // 构造一个数据字典
+          send_data={
+              'name':username,
+              'pwd':password,
+              'csrfmiddlewaretoken':'{{ csrf_token }}'
+          };
+          $.ajax(
+              {
+                  url:url,
+                  type:"post",
+                  data:send_data,
+                  success:function (data) {
+                      console.log(data);
+                      console.log(data.content)
+                  },
+                  error:function (error) {
+                      console.log(error)
+                  }
+              }
+          )
+      }
+  )
+</script>
+</body>
+</html>

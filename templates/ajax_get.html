@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ajaxget请求</title>
+  <script src="/static/js/jquery-1.8.3.min.js"></script>
+</head>
+<body>
+<form action="">
+  用户名：<input id="username" type="text" name="username"><br>
+  密码：<input id="password" type="password" name="password"><br>
+  <input id="check_value" type="button" value="提交">
+</form>
+<script>
+  $("#check_value").click(
+      function () {
+          username=$("#username").val();     // 获取用户名的值
+          password=$("#password").val();     // 获取密码的值
+          url = '/ajax_get_data/?username='+username+'&password='+password;
+          $.ajax(                            // 发起一个ajax请求
+              {                              // ajax请求的数据需要放在一个对象中
+                  url:url,                   // ajax请求的路径
+                  type:'get',                // ajax请求的类型
+                  data:'',                   // ajax请求的数据，在post请求中填写
+                  success:function (data) {  // 请求成功后执行的，data接口返回的数据
+                      console.log(data['content']);
+                  },
+                  error:function (error) {   //请求报错之后执行
+                      console.log(error)
+                  }
+              }
+          );
+      }
+  )
+</script>
+</body>
+</html>
